@@ -1,0 +1,29 @@
+{% extends "web/base.html" %}
+{% load static %}
+{% block title %}Entrar · Wine Rate{% endblock %}
+{% block body_class %}auth-page{% endblock %}
+{% block content %}
+<div class="auth-card mx-auto">
+  <div class="text-center mb-4">
+    <i class="fa-solid fa-wine-glass auth-logo"></i>
+    <h1 class="h3 mt-2 brand-title">Wine Rate</h1>
+    <p class="text-muted mb-0">O diário das suas degustações</p>
+  </div>
+  <div id="formAlert" class="alert alert-danger d-none" role="alert"></div>
+  <form id="authForm" data-mode="login" novalidate>
+    <div class="mb-3">
+      <label class="form-label" for="email">E-mail</label>
+      <input class="form-control" id="email" name="email" type="email" autocomplete="email" required>
+      <div class="invalid-feedback" data-error-for="email"></div>
+    </div>
+    <div class="mb-4">
+      <label class="form-label" for="password">Senha</label>
+      <input class="form-control" id="password" name="password" type="password" autocomplete="current-password" required>
+      <div class="invalid-feedback" data-error-for="password"></div>
+    </div>
+    <button class="btn btn-primary w-100" type="submit">Entrar</button>
+  </form>
+  <p class="text-center mt-4 mb-0 small">Ainda não tem conta? <a href="{% url 'register' %}">Cadastre-se</a></p>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{% static 'web/js/auth.js' %}"></script>{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "web/base.html" %}
+{% load static %}
+{% block title %}Meus vinhos · Wine Rate{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1 class="h3 brand-title mb-0">Meus vinhos</h1>
+  <a class="btn btn-primary" href="{% url 'wine-new' %}"><i class="fa-solid fa-plus me-1"></i>Novo vinho</a>
+</div>
+
+<form id="filters" class="panel mb-4" autocomplete="off">
+  <div class="row g-2">
+    <div class="col-12 col-md-4"><input class="form-control" name="name" placeholder="Buscar por nome" aria-label="Nome"></div>
+    <div class="col-6 col-md-2"><input class="form-control" name="country" placeholder="País" aria-label="País"></div>
+    <div class="col-6 col-md-2"><input class="form-control" name="grape" placeholder="Uva" aria-label="Uva"></div>
+    <div class="col-6 col-md-2">
+      <select class="form-select" name="rating" aria-label="Nota">
+        <option value="">Nota</option>
+        {% for n in "54321" %}<option value="{{ n }}">{{ n }} estrela{{ n|pluralize }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-6 col-md-2"><input class="form-control" name="tasting_year" type="number" min="1900" max="2100" placeholder="Ano" aria-label="Ano da degustação"></div>
+    <div class="col-8 col-md-4">
+      <select class="form-select" name="ordering" aria-label="Ordenação">
+        <option value="-tasting_date">Degustação: mais recente</option>
+        <option value="tasting_date">Degustação: mais antiga</option>
+        <option value="-rating">Melhor avaliados</option>
+        <option value="rating">Pior avaliados</option>
+      </select>
+    </div>
+    <div class="col-4 col-md-2 ms-md-auto"><button type="reset" class="btn btn-outline-secondary w-100">Limpar</button></div>
+  </div>
+</form>
+
+<div id="alertBox" class="alert alert-danger d-none"></div>
+<div id="loading" class="text-center py-5 d-none"><div class="spinner-border text-wine" role="status"></div></div>
+<div id="empty" class="empty-state d-none"><i class="fa-solid fa-wine-glass"></i><p class="mb-0 text-muted">Nenhum vinho encontrado.</p></div>
+<div id="list" class="row g-3"></div>
+
+<nav id="pager" class="d-flex justify-content-between align-items-center mt-4 d-none">
+  <button id="prev" class="btn btn-outline-secondary btn-sm">&larr; Anterior</button>
+  <span id="pageInfo" class="small text-muted"></span>
+  <button id="next" class="btn btn-outline-secondary btn-sm">Próxima &rarr;</button>
+</nav>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title h5" id="deleteTitle">Excluir vinho?</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+      <div class="modal-body">
+        Você vai excluir <strong id="deleteName"></strong>. Esta ação não pode ser desfeita.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger-wine" id="confirmDelete">Excluir</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{% static 'web/js/wine_list.js' %}"></script>{% endblock %}

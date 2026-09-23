@@ -1,0 +1,16 @@
+[Unit]
+Description=Wine Rate (gunicorn)
+After=network.target postgresql.service
+
+[Service]
+User=winerate
+Group=winerate
+WorkingDirectory=/srv/winerate/app
+EnvironmentFile=/srv/winerate/app/.env
+ExecStart=/srv/winerate/venv/bin/gunicorn config.wsgi:application \
+    --bind unix:/run/winerate/gunicorn.sock --workers 3 --timeout 60
+RuntimeDirectory=winerate
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,103 @@
+{% extends "web/base.html" %}
+{% load static %}
+{% block title %}{% if pk %}Editar vinho{% else %}Novo vinho{% endif %} · Wine Rate{% endblock %}
+{% block content %}
+<div class="mb-4">
+  <a href="{% url 'wine-list' %}" class="small text-decoration-none"><i class="fa-solid fa-arrow-left me-1"></i>Meus vinhos</a>
+  <h1 class="h3 brand-title mt-1">{% if pk %}Editar vinho{% else %}Novo vinho{% endif %}</h1>
+</div>
+
+<div id="alertBox" class="alert alert-danger d-none" role="alert"></div>
+
+<div class="row g-4" id="formRoot" data-wine-id="{{ pk|default:'' }}">
+  {% if not pk %}
+  <div class="col-12 col-lg-4">
+    <div class="panel">
+      <h2 class="panel-title"><i class="fa-solid fa-camera me-2"></i>Ler rótulo</h2>
+      <p class="small text-muted">Tire ou envie uma foto do rótulo. A IA sugere os dados, mas <strong>nada é salvo</strong> até você revisar e confirmar.</p>
+      <input class="form-control mb-3" type="file" id="labelFile" accept="image/jpeg,image/png,image/webp" capture="environment">
+      <div class="label-preview d-none" id="previewBox"><img id="preview" alt="Prévia do rótulo"></div>
+      <button class="btn btn-outline-wine w-100 mt-3" id="btnIdentify" type="button" disabled>
+        <span class="spinner-border spinner-border-sm d-none me-2" id="identifySpin"></span>
+        <i class="fa-solid fa-wand-magic-sparkles me-1"></i>Preencher com IA
+      </button>
+      <div id="aiNotice" class="alert alert-secondary small mt-3 mb-0 d-none"></div>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="col-12 {% if not pk %}col-lg-8{% endif %}">
+    <form id="wineForm" class="panel" novalidate>
+      <div class="row g-3">
+        <div class="col-12">
+          <label class="form-label" for="name">Nome do vinho *</label>
+          <input class="form-control" id="name" name="name" maxlength="200" required>
+          <div class="invalid-feedback" data-error-for="name"></div>
+        </div>
+        <div class="col-12 col-md-8">
+          <label class="form-label" for="winery">Vinícola</label>
+          <input class="form-control" id="winery" name="winery" maxlength="200">
+          <div class="invalid-feedback" data-error-for="winery"></div>
+        </div>
+        <div class="col-12 col-md-4">
+          <label class="form-label" for="vintage">Safra</label>
+          <input class="form-control" id="vintage" name="vintage" type="number" inputmode="numeric" min="1800" placeholder="Ex.: 2021">
+          <div class="invalid-feedback" data-error-for="vintage"></div>
+        </div>
+        <div class="col-12 col-md-4">
+          <label class="form-label" for="country">País</label>
+          <input class="form-control" id="country" name="country" maxlength="100">
+          <div class="invalid-feedback" data-error-for="country"></div>
+        </div>
+        <div class="col-12 col-md-4">
+          <label class="form-label" for="region">Região</label>
+          <input class="form-control" id="region" name="region" maxlength="150">
+          <div class="invalid-feedback" data-error-for="region"></div>
+        </div>
+        <div class="col-12 col-md-4">
+          <label class="form-label" for="grape">Uva</label>
+          <input class="form-control" id="grape" name="grape" maxlength="150">
+          <div class="invalid-feedback" data-error-for="grape"></div>
+        </div>
+        <div class="col-6 col-md-4">
+          <label class="form-label" for="price">Preço (R$)</label>
+          <input class="form-control" id="price" name="price" type="number" inputmode="decimal" min="0" step="0.01">
+          <div class="invalid-feedback" data-error-for="price"></div>
+        </div>
+        <div class="col-6 col-md-4">
+          <label class="form-label" for="tasting_date">Data da degustação *</label>
+          <input class="form-control" id="tasting_date" name="tasting_date" type="date" required>
+          <div class="invalid-feedback" data-error-for="tasting_date"></div>
+        </div>
+        <div class="col-12 col-md-4">
+          <label class="form-label" for="location">Local</label>
+          <input class="form-control" id="location" name="location" maxlength="200" placeholder="Restaurante, loja, casa...">
+          <div class="invalid-feedback" data-error-for="location"></div>
+        </div>
+        <div class="col-12">
+          <label class="form-label d-block">Nota *</label>
+          <div class="star-input" role="radiogroup" aria-label="Nota de 1 a 5">
+            {% for n in "54321" %}
+            <input type="radio" name="rating" id="rating{{ n }}" value="{{ n }}">
+            <label for="rating{{ n }}" title="{{ n }} estrela{{ n|pluralize }}"><i class="fa-solid fa-star"></i><span class="visually-hidden">{{ n }}</span></label>
+            {% endfor %}
+          </div>
+          <div class="invalid-feedback d-block" data-error-for="rating"></div>
+        </div>
+        <div class="col-12">
+          <label class="form-label" for="comment">Comentário</label>
+          <textarea class="form-control" id="comment" name="comment" rows="4" placeholder="Aroma, corpo, harmonização..."></textarea>
+          <div class="invalid-feedback" data-error-for="comment"></div>
+        </div>
+      </div>
+      <div class="d-flex justify-content-end gap-2 mt-4">
+        <a class="btn btn-outline-secondary" href="{% url 'wine-list' %}">Cancelar</a>
+        <button class="btn btn-primary" type="submit" id="btnSave">
+          <span class="spinner-border spinner-border-sm d-none me-2" id="saveSpin"></span>Salvar vinho
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{% static 'web/js/wine_form.js' %}"></script>{% endblock %}
