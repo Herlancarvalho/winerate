@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 ("last_login", models.DateTimeField(blank=True, null=True, verbose_name="last login")),
                 ("is_superuser", models.BooleanField(default=False, help_text="Designates that this user has all permissions without explicitly assigning them.", verbose_name="superuser status")),
                 ("name", models.CharField(max_length=150, verbose_name="nome")),
-                ("email", models.EmailField(max_length=254, verbose_name="e-mail")),
+                ("email", models.EmailField(max_length=254, unique=True, verbose_name="e-mail")),
                 ("is_active", models.BooleanField(default=True)),
                 ("is_staff", models.BooleanField(default=False)),
                 ("created_at", models.DateTimeField(auto_now_add=True, verbose_name="criado em")),

@@ -32,7 +32,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     """Usuário autenticado por e-mail e senha."""
 
     name = models.CharField("nome", max_length=150)
-    email = models.EmailField("e-mail", max_length=254)
+    email = models.EmailField("e-mail", max_length=254, unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     created_at = models.DateTimeField("criado em", auto_now_add=True)
