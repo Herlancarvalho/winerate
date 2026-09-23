@@ -14,18 +14,14 @@ from .services.label_vision import LabelVisionError, extract_label_data
 
 
 class WineViewSet(OwnedQuerySetMixin, viewsets.ModelViewSet):
-    """
-    CRUD de vinhos. O queryset já vem restrito ao usuário logado, então
-    o ID de outro usuário devolve 404.
-    A confirmação de exclusão é da interface (modal).
-    """
+    """..."""
 
     serializer_class = WineSerializer
     permission_classes = [IsAuthenticated, IsOwner]
+    throttle_scope = None          # <- adicione esta linha
     filterset_class = WineFilter
     ordering_fields = ["tasting_date", "rating", "created_at", "name"]
     ordering = ["-tasting_date", "-created_at"]
-
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
