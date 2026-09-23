@@ -49,12 +49,33 @@ def _mock() -> dict:
         "region": "Mendoza",
     })
 
+def _prepare_image(image_bytes: bytes) -> tuple[bytes, str]:
+    """
+    Reduz a foto antes de enviá-la à API de visão: a API recusa imagens acima
+    de 5 MB, e 1568 px no lado maior já bastam para ler um rótulo (e custa menos).
+    """
+    from io import BytesIO
+
+    from PIL import Image, ImageOps
+
+    try:
+        with Image.open(BytesIO(image_bytes)) as img:
+            img = ImageOps.exif_transpose(img)   # respeita a rotação da câmera
+            img.thumbnail((1568, 1568))
+            if img.mode != "RGB":
+                img = img.convert("RGB")
+            buffer = BytesIO()
+            img.save(buffer, "JPEG", quality=85)
+    except (OSError, Image.DecompressionBombError) as exc:
+        raise LabelVisionError("Não foi possível processar a imagem enviada.") from exc
+    return buffer.getvalue(), "image/jpeg"
 
 def _anthropic(image_bytes: bytes, media_type: str) -> dict:
     import anthropic
 
     if not settings.ANTHROPIC_API_KEY:
         raise LabelVisionError("Chave da API de visão não configurada.")
+        image_bytes, media_type = _prepare_image(image_bytes)
     client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY, timeout=30.0)
     try:
         message = client.messages.create(

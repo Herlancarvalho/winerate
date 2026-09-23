@@ -23,7 +23,7 @@ class LabelImageSerializer(serializers.Serializer):
 
     def validate_image(self, image):
         if image.size > settings.LABEL_IMAGE_MAX_BYTES:
-            raise serializers.ValidationError("A imagem excede o tamanho máximo de 5 MB.")
+            raise serializers.ValidationError("A imagem excede o tamanho máximo de 10 MB.")
         # O ImageField do Django define content_type a partir do formato
         # detectado pelo Pillow, não do cabeçalho enviado pelo cliente.
         if getattr(image, "content_type", None) not in settings.LABEL_IMAGE_ALLOWED_TYPES:

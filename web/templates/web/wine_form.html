@@ -15,7 +15,12 @@
     <div class="panel">
       <h2 class="panel-title"><i class="fa-solid fa-camera me-2"></i>Ler rótulo</h2>
       <p class="small text-muted">Tire ou envie uma foto do rótulo. A IA sugere os dados, mas <strong>nada é salvo</strong> até você revisar e confirmar.</p>
-      <input class="form-control mb-3" type="file" id="labelFile" accept="image/jpeg,image/png,image/webp" capture="environment">
+      <div class="d-grid gap-2 mb-3">
+        <button type="button" class="btn btn-outline-secondary" id="btnCamera"><i class="fa-solid fa-camera me-1"></i>Tirar foto</button>
+        <button type="button" class="btn btn-outline-secondary" id="btnGallery"><i class="fa-solid fa-image me-1"></i>Escolher dos meus arquivos</button>
+      </div>
+      <input type="file" id="fileCamera" accept="image/jpeg,image/png,image/webp" capture="environment" hidden>
+      <input type="file" id="fileGallery" accept="image/jpeg,image/png,image/webp" hidden>
       <div class="label-preview d-none" id="previewBox"><img id="preview" alt="Prévia do rótulo"></div>
       <button class="btn btn-outline-wine w-100 mt-3" id="btnIdentify" type="button" disabled>
         <span class="spinner-border spinner-border-sm d-none me-2" id="identifySpin"></span>

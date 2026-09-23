@@ -122,9 +122,9 @@ REST_FRAMEWORK = {
 
 # ----------------------------------------------------------------- Uploads
 # A imagem do rótulo é processada em memória e descartada (sem armazenamento).
-DATA_UPLOAD_MAX_MEMORY_SIZE = 6 * 1024 * 1024
-FILE_UPLOAD_MAX_MEMORY_SIZE = 6 * 1024 * 1024
-LABEL_IMAGE_MAX_BYTES = 5 * 1024 * 1024
+DATA_UPLOAD_MAX_MEMORY_SIZE = 11 * 1024 * 1024
+FILE_UPLOAD_MAX_MEMORY_SIZE = 11 * 1024 * 1024
+LABEL_IMAGE_MAX_BYTES = 10 * 1024 * 1024
 LABEL_IMAGE_ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp"}
 
 LABEL_VISION_PROVIDER = config("LABEL_VISION_PROVIDER", default="mock")

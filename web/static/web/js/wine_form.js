@@ -5,55 +5,51 @@
   const form = $("wineForm");
   const alertBox = $("alertBox");
   const wineId = root.dataset.wineId;
-  const MAX_BYTES = 5 * 1024 * 1024;
+  const MAX_BYTES = 10 * 1024 * 1024;
   const AI_FIELDS = ["name", "winery", "vintage", "grape", "country", "region"];
   const TEXT_FIELDS = ["name", "winery", "country", "region", "grape", "location", "comment"];
 
-  /* Data padrão = hoje (no fuso do usuário); futuro é bloqueado */
-  const today = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
-  form.tasting_date.max = today;
-  if (!wineId) form.tasting_date.value = today;
-
-  /* ---------- Edição: carrega o vinho pela API (404 se não for do usuário) ---------- */
-  async function loadWine() {
-    try {
-      const w = await api(`/api/wines/${wineId}`);
-      [...TEXT_FIELDS, "vintage", "price", "tasting_date"].forEach((f) => {
-        if (form[f]) form[f].value = w[f] ?? "";
-      });
-      const radio = form.querySelector(`input[name=rating][value="${Number(w.rating)}"]`);
-      if (radio) radio.checked = true;
-    } catch (err) {
-      form.classList.add("d-none");
-      showAlert(alertBox, err.status === 404 ? "Vinho não encontrado." : "Não foi possível carregar o vinho.");
-    }
-  }
-  if (wineId) loadWine();
-
-  /* ---------- Rótulo: prévia + preenchimento assistido ---------- */
+    /* ---------- Rótulo: prévia + preenchimento assistido ---------- */
   if (!wineId) {
-    const file = $("labelFile");
     const btn = $("btnIdentify");
+    const ALLOWED = ["image/jpeg", "image/png", "image/webp"];
     let previewUrl = null;
+    let selected = null;   // imagem escolhida (câmera ou arquivos)
 
-    file.addEventListener("change", () => {
+    const clearSelection = () => {
+      selected = null;
+      btn.disabled = true;
+      $("previewBox").classList.add("d-none");
+    };
+
+    function onPick(input) {
       hideAlert(alertBox);
       if (previewUrl) URL.revokeObjectURL(previewUrl);
-      const f = file.files[0];
-      if (!f) { btn.disabled = true; $("previewBox").classList.add("d-none"); return; }
-      if (f.size > MAX_BYTES) {
-        showAlert(alertBox, "A imagem excede 5 MB. Escolha uma foto menor.");
-        file.value = ""; btn.disabled = true; $("previewBox").classList.add("d-none");
-        return;
+      const f = input.files[0];
+      input.value = "";   // permite escolher o mesmo arquivo novamente
+      if (!f) return;
+      if (!ALLOWED.includes(f.type)) {
+        showAlert(alertBox, "Formato não suportado. Use JPEG, PNG ou WebP.");
+        return clearSelection();
       }
+      if (f.size > MAX_BYTES) {
+        showAlert(alertBox, "A imagem excede 10 MB. Escolha uma foto menor.");
+        return clearSelection();
+      }
+      selected = f;
       previewUrl = URL.createObjectURL(f);
       $("preview").src = previewUrl;
       $("previewBox").classList.remove("d-none");
       btn.disabled = false;
-    });
+    }
+
+    $("btnCamera").addEventListener("click", () => $("fileCamera").click());
+    $("btnGallery").addEventListener("click", () => $("fileGallery").click());
+    $("fileCamera").addEventListener("change", (e) => onPick(e.target));
+    $("fileGallery").addEventListener("change", (e) => onPick(e.target));
 
     btn.addEventListener("click", async () => {
-      const f = file.files[0];
+      const f = selected;
       if (!f) return;
       hideAlert(alertBox);
       btn.disabled = true;
