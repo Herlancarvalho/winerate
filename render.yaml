@@ -28,6 +28,6 @@ services:
       - key: DJANGO_CSRF_TRUSTED_ORIGINS
         value: https://winerate.onrender.com
       - key: LABEL_VISION_PROVIDER
-        value: mock
+        value: anthropic
       - key: ANTHROPIC_API_KEY
         sync: false      # informe no painel; nunca no repositório
