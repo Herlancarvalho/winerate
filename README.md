@@ -1,5 +1,7 @@
 # Wine Rate
 
+> Para entender as decisões técnicas por trás do projeto, veja [ARQUITETURA.md](ARQUITETURA.md).
+
 Aplicação web responsiva para registrar e avaliar vinhos degustados.
 Django 5 · Django REST Framework · PostgreSQL · Bootstrap 5 · Chart.js.
 
