@@ -12,7 +12,13 @@
             <div class="wine-meta">${fmtDate(w.tasting_date)}</div>`;
   }
 
-  function chart(canvasId, type, labels, data, options = {}) {
+  function goToWines(params) {
+    location.href = "/wines/?" + new URLSearchParams(params).toString();
+  }
+
+  /* onSelect(label, index), quando informado, torna o gráfico clicável: tocar
+     em uma barra/fatia leva para "Meus vinhos" já filtrado por aquela categoria. */
+  function chart(canvasId, type, labels, data, options = {}, onSelect) {
     new Chart($(canvasId), {
       type,
       data: { labels, datasets: [{ data, backgroundColor: PALETTE, borderWidth: 0, borderRadius: type === "bar" ? 6 : 0 }] },
@@ -20,6 +26,17 @@
         responsive: true,
         maintainAspectRatio: false,
         plugins: { legend: { display: type === "doughnut", position: "bottom" } },
+        onHover: onSelect
+          ? (evt, elements) => { evt.native.target.style.cursor = elements.length ? "pointer" : "default"; }
+          : undefined,
+        onClick: onSelect
+          ? (evt, elements) => {
+              if (!elements.length) return;
+              const idx = elements[0].index;
+              if (Number(data[idx]) === 0) return;   // nada cadastrado nessa fatia
+              onSelect(labels[idx], idx);
+            }
+          : undefined,
         ...options,
       },
     });
@@ -37,22 +54,28 @@
     $("statBest").innerHTML = wineBlock(d.best_wine);
     $("statLast").innerHTML = wineBlock(d.last_wine);
 
+    const countryLabels = d.by_country.map((x) => x.label);
+    const grapeLabels = d.by_grape.map((x) => x.label);
+
     const intAxis = { beginAtZero: true, ticks: { precision: 0 } };
-    chart("chartCountry", "bar", d.by_country.map((x) => x.label), d.by_country.map((x) => x.count), {
+    chart("chartCountry", "bar", countryLabels, d.by_country.map((x) => x.count), {
       indexAxis: "y", scales: { x: intAxis },
-    });
-    chart("chartGrape", "doughnut", d.by_grape.map((x) => x.label), d.by_grape.map((x) => x.count));
+    }, (label) => goToWines({ country: label }));
+
+    chart("chartGrape", "doughnut", grapeLabels, d.by_grape.map((x) => x.count), {}, (label) => goToWines({ grape: label }));
+
     chart("chartRating", "bar", d.by_rating.map((x) => `${x.rating} ★`), d.by_rating.map((x) => x.count), {
       scales: { y: intAxis },
-    });
+    }, (_label, idx) => goToWines({ rating: d.by_rating[idx].rating }));
 
     const ratingAxis = { beginAtZero: true, max: 5, ticks: { stepSize: 1 } };
-    chart("chartCountryAvg", "bar", d.by_country.map((x) => x.label), d.by_country.map((x) => x.avg_rating), {
+    chart("chartCountryAvg", "bar", countryLabels, d.by_country.map((x) => x.avg_rating), {
       indexAxis: "y", scales: { x: ratingAxis },
-    });
-    chart("chartGrapeAvg", "bar", d.by_grape.map((x) => x.label), d.by_grape.map((x) => x.avg_rating), {
+    }, (label) => goToWines({ country: label }));
+
+    chart("chartGrapeAvg", "bar", grapeLabels, d.by_grape.map((x) => x.avg_rating), {
       scales: { y: ratingAxis },
-    });
+    }, (label) => goToWines({ grape: label }));
   } catch (err) {
     $("loading").classList.add("d-none");
     showAlert($("alertBox"), "Não foi possível carregar o dashboard.");

@@ -46,7 +46,7 @@
       $("prev").disabled = !data.previous;
       $("next").disabled = !data.next;
     } catch (err) {
-      if (err.status === 404 && page > 1) { page -= 1; return load(); } // página deixou de existir
+      if (err.status === 404 && page > 1) { page -= 1; return load(); }
       showAlert($("alertBox"), "Não foi possível carregar seus vinhos.");
     } finally {
       $("loading").classList.add("d-none");
@@ -58,7 +58,7 @@
     load();
   };
 
-  form.addEventListener("input", () => {           // filtros dinâmicos com debounce
+  form.addEventListener("input", () => {
     clearTimeout(timer);
     timer = setTimeout(reload, 300);
   });
@@ -90,6 +90,14 @@
       btn.disabled = false;
       pendingDelete = null;
     }
+  });
+
+  /* Vindo de um clique no dashboard (ex.: "/wines/?country=Argentina"),
+     pré-preenche os filtros com o que veio na URL antes de carregar. */
+  const initial = new URLSearchParams(location.search);
+  ["name", "country", "grape", "rating", "tasting_year", "ordering"].forEach((f) => {
+    const v = initial.get(f);
+    if (v && form[f]) form[f].value = v;
   });
 
   load();
