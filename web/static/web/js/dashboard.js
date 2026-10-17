@@ -45,12 +45,14 @@
     chart("chartRating", "bar", d.by_rating.map((x) => `${x.rating} ★`), d.by_rating.map((x) => x.count), {
       scales: { y: intAxis },
     });
+
     const ratingAxis = { beginAtZero: true, max: 5, ticks: { stepSize: 1 } };
     chart("chartCountryAvg", "bar", d.by_country.map((x) => x.label), d.by_country.map((x) => x.avg_rating), {
       indexAxis: "y", scales: { x: ratingAxis },
     });
     chart("chartGrapeAvg", "bar", d.by_grape.map((x) => x.label), d.by_grape.map((x) => x.avg_rating), {
       scales: { y: ratingAxis },
+    });
   } catch (err) {
     $("loading").classList.add("d-none");
     showAlert($("alertBox"), "Não foi possível carregar o dashboard.");
