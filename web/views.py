@@ -16,6 +16,11 @@ from django.views.generic import TemplateView
 class PrivatePage(LoginRequiredMixin, TemplateView):
     """Páginas do app: exigem login e garantem o cookie CSRF para o fetch."""
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.setdefault("pk", self.kwargs.get("pk"))
+        return context
+
 
 @method_decorator(ensure_csrf_cookie, name="dispatch")
 class PublicAuthPage(TemplateView):

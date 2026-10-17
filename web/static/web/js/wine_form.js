@@ -10,7 +10,28 @@
   const AI_FIELDS = ["name", "winery", "vintage", "grape", "country", "region"];
   const TEXT_FIELDS = ["name", "winery", "country", "region", "grape", "location", "comment"];
 
-    /* ---------- Rótulo: prévia + preenchimento assistido ---------- */
+  /* Data padrão = hoje (no fuso do usuário); futuro é bloqueado */
+  const today = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+  form.tasting_date.max = today;
+  if (!wineId) form.tasting_date.value = today;
+
+  /* ---------- Edição: carrega o vinho pela API (404 se não for do usuário) ---------- */
+  async function loadWine() {
+    try {
+      const w = await api(`/api/wines/${wineId}`);
+      [...TEXT_FIELDS, "vintage", "price", "tasting_date"].forEach((f) => {
+        if (form[f]) form[f].value = w[f] ?? "";
+      });
+      const radio = form.querySelector(`input[name=rating][value="${Number(w.rating)}"]`);
+      if (radio) radio.checked = true;
+    } catch (err) {
+      form.classList.add("d-none");
+      showAlert(alertBox, err.status === 404 ? "Vinho não encontrado." : "Não foi possível carregar o vinho.");
+    }
+  }
+  if (wineId) loadWine();
+
+  /* ---------- Rótulo: prévia + preenchimento assistido ---------- */
   if (!wineId) {
     const btn = $("btnIdentify");
     const ALLOWED = ["image/jpeg", "image/png", "image/webp"];
