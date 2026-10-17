@@ -59,10 +59,13 @@ class DashboardView(APIView):
             rows = (
                 qs.exclude(**{field: ""})
                 .values(field)
-                .annotate(count=Count("id"))
+                .annotate(count=Count("id"), avg_rating=Avg("rating"))
                 .order_by("-count", field)[:10]
             )
-            return [{"label": r[field], "count": r["count"]} for r in rows]
+            return [
+                {"label": r[field], "count": r["count"], "avg_rating": round(r["avg_rating"], 2)}
+                for r in rows
+            ]
 
         by_rating = {r["rating"]: r["count"] for r in qs.order_by().values("rating").annotate(count=Count("id"))}
 

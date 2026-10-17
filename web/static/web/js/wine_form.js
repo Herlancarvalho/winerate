@@ -4,7 +4,8 @@
   const root = $("formRoot");
   const form = $("wineForm");
   const alertBox = $("alertBox");
-  const wineId = root.dataset.wineId;
+  const pathMatch = location.pathname.match(/^\/wines\/(\d+)\/edit\/?$/);
+  const wineId = root.dataset.wineId || (pathMatch ? pathMatch[1] : "");
   const MAX_BYTES = 10 * 1024 * 1024;
   const AI_FIELDS = ["name", "winery", "vintage", "grape", "country", "region"];
   const TEXT_FIELDS = ["name", "winery", "country", "region", "grape", "location", "comment"];
